@@ -15,12 +15,12 @@ namespace BookshelfLib.Models
         public int BookId { get; set; }
         public string Title { get; set; }
         public DateTime PurchaseDate { get; set; }
-        public string Genere { get; set; }
+        public string GenereName { get; set; }
         public int ReadCount { get; set; }
-        public int ShelfId { get; set; }
+        public string ShelfName { get; set; }
 
-        public virtual Genere GenereNavigation { get; set; }
-        public virtual Shelf Shelf { get; set; }
+        public virtual Genere GenereNameNavigation { get; set; }
+        public virtual Shelf ShelfNameNavigation { get; set; }
         public virtual ICollection<BookAuthor> BookAuthors { get; set; }
     }
 }

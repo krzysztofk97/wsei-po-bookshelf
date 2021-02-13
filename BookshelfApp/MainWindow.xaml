@@ -25,36 +25,35 @@
             <RowDefinition Height="10"/>
         </Grid.RowDefinitions>
 
-        <DataGrid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="5" x:Name="BooksDataGrid" AutoGenerateColumns="False">
+        <DataGrid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="5" x:Name="BooksDataGrid" ItemsSource="{Binding}" AutoGenerateColumns="False" CanUserAddRows="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="*" CanUserSort="False" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Title" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Authors" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Purchase Date" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Genere" IsReadOnly="True" />
-                <DataGridTextColumn Header="Room" IsReadOnly="True" />
-                <DataGridTextColumn Header="Shelf" IsReadOnly="True" />
-                <DataGridTextColumn Header="Read Count"/>
+                <DataGridTextColumn Header="Tytuł" IsReadOnly="True" Binding="{Binding Title}"/>
+                <DataGridTextColumn Header="Autorzy" IsReadOnly="True" Binding="{Binding Authors}"/>
+                <DataGridTextColumn Header="Data zakupu" IsReadOnly="True" Binding="{Binding PurchaseDate, StringFormat=dd.MM.yyyy}"/>
+                <DataGridTextColumn Header="Gatunek" IsReadOnly="True" Binding="{Binding GenereName}"/>
+                <DataGridTextColumn Header="Półka" IsReadOnly="True" Binding="{Binding ShelfName}"/>
+                <DataGridTextColumn Header="Ilość przeczytań" IsReadOnly="True" Binding="{Binding ReadCount}"/>
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button>Edit</Button>
+                            <Button>Modyfikuj</Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button>Remove</Button>
+                            <Button>Usuń</Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
         
-        <Button x:Name="AddBookButton" Grid.Row="3" Grid.Column="1">Add Book</Button> 
+        <Button x:Name="AddBookButton" Grid.Row="3" Grid.Column="1" Click="AddBookButtonClick">Dodaj książkę</Button> 
 
-        <Button x:Name="ManageAuthorsButton" Grid.Row="3" Grid.Column="4">Manage Authors</Button>
-        <Button x:Name="ManageRoomsButton" Grid.Row="3" Grid.Column="5">Manage Rooms</Button>
+        <Button x:Name="ManageAuthorsButton" Grid.Row="3" Grid.Column="4">Zarządzaj autormai</Button>
+        <Button x:Name="ManageShelfsButton" Grid.Row="3" Grid.Column="5" Click="ManageShelfsButtonClick">Zarządzaj półkami</Button>
     </Grid>
 </Window>

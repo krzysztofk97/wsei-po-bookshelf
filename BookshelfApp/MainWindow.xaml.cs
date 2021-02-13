@@ -12,20 +12,33 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Collections.Generic;
+using BookshelfLib;
 using BookshelfLib.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookshelfApp
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-
     public partial class MainWindow : Window
     {
+        private DBConnect dB = new DBConnect();
+
         public MainWindow()
         {
             InitializeComponent();
+
+            BooksDataGrid.DataContext = dB.GetBooks();
+        }
+
+        private void AddBookButtonClick(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ManageShelfsButtonClick(object sender, RoutedEventArgs e)
+        {
+            ManageShelfsWindow manageShelfsWindow = new ManageShelfsWindow();
+
+            manageShelfsWindow.Show();
         }
     }
 }

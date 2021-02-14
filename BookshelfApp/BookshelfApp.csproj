@@ -2,12 +2,34 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>BookShelfIcon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\BookshelfSplashScreen.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\BookshelfLib\BookshelfLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <SplashScreen Include="Assets\BookshelfSplashScreen.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="ManageGeneresWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="ManageGeneresWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 
 </Project>

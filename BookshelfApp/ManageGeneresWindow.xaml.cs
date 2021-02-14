@@ -19,84 +19,82 @@ namespace BookshelfApp
     /// <summary>
     /// Logika interakcji dla klasy ManageShelfsWindow.xaml
     /// </summary>
-    public partial class ManageShelfsWindow : Window
+    public partial class ManageGeneresWindow : Window
     {
         private DBConnect dB = new DBConnect();
 
-        public ManageShelfsWindow()
+        public ManageGeneresWindow()
         {
             InitializeComponent();
 
-            ShelfsDataGrid.DataContext = dB.GetShelfs();
+            GeneresDataGrid.DataContext = dB.GetGeneres();
         }
 
         private void AddButtonClick(object sender, RoutedEventArgs e)
         {
             AddButton.IsEnabled = false;
-            AddShelfTextBox.IsEnabled = false;
+            AddGenereTextBox.IsEnabled = false;
 
             try
             {
-                dB.AddShelf(AddShelfTextBox.Text);
+                dB.AddGenere(AddGenereTextBox.Text);
             }
             catch (InvalidOperationException)
             {
-                MessageBox.Show("Wystąpił błąd podczas dodawania nowej półki.", 
-                                "Błąd podczas dodawania półki",
+                MessageBox.Show("Wystąpił błąd podczas dodawania nowego gatunku.", "Błąd podczas dodawania gatunku",
                                  MessageBoxButton.OK,
                                  MessageBoxImage.Error);
             }
             catch (DbUpdateException)
             {
-                MessageBox.Show("Wystąpił błąd podczas dodawania nowej półki.\nUpewnij się, że półka, którą próbujesz dodać nie została już dodana.", 
-                                "Błąd podczas dodawania półki",
+                MessageBox.Show("Wystąpił błąd podczas dodawania nowego gatunku.\nUpewnij się, że gatunek, który próbujesz dodać nie został już dodany.", "Błąd podczas dodawania gatunku",
                                  MessageBoxButton.OK,
                                  MessageBoxImage.Exclamation);
             }
             catch (ArgumentNullException)
             {
-                MessageBox.Show("Nie można dodać półki bez nazwy.", 
-                                "Błąd podczas dodawania półki",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Information);
+                MessageBox.Show("Nie można dodać gatunku bez nazwy.", "Błąd podczas dodawania gatunku",
+                                 MessageBoxButton.OK,
+                                 MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.GetType().ToString() + "\n\n" + ex.Message,
-                                "Błąd podczas dodawania półki",
+                                "Błąd podczas dodawania gatunku",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
             }
 
-            AddShelfTextBox.Clear();
+            AddGenereTextBox.Clear();
 
-            ShelfsDataGrid.DataContext = dB.GetShelfs();
+            GeneresDataGrid.DataContext = dB.GetGeneres();
 
             AddButton.IsEnabled = true;
-            AddShelfTextBox.IsEnabled = true;
+            AddGenereTextBox.IsEnabled = true;
         }
 
         private void RemoveButton(object sender, RoutedEventArgs e)
         {
             try
             {
-                dB.RemoveShelf((Shelf)ShelfsDataGrid.SelectedItem);
+                dB.RemoveGenere((Genere)GeneresDataGrid.SelectedItem);
             }
             catch (DbUpdateException)
             {
-                MessageBox.Show("Wystąpił błąd podczas próby usunięcia półki.\nUpewnij się, że do półki, którą chcesz usunąć nie ma przypisanej żadej książki, a następnie spróbuj ponownie.", 
-                                "Błąd podczas usuwania półki",
+                MessageBox.Show("Wystąpił błąd podczas próby usunięcia gatunku.\nUpewnij się, że do gatunku, który chcesz usunąć nie ma przypisanej żadej książki, a następnie spróbuj ponownie.", 
+                                "Błąd podczas usuwania gatunku",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Exclamation);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.GetType().ToString() + "\n\n" + ex.Message,
-                                "Błąd podczas usuwania półki",
+                                "Błąd podczas usuwania gatunku",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
             }
-            ShelfsDataGrid.DataContext = dB.GetShelfs();
+
+            GeneresDataGrid.DataContext = dB.GetGeneres();
         }
     }
 }

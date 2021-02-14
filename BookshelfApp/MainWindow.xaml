@@ -37,14 +37,21 @@
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button>Modyfikuj</Button>
+                            <Button>
+                                test
+                            </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button>Usuń</Button>
+                            <Button x:Name="RemoveButton" Click="RemoveButtonClick">
+                                <StackPanel>
+                                    <TextBlock>Delete</TextBlock>
+                                    <Image Source="Assets/Icons/delete.png" Stretch="Uniform"/>
+                                </StackPanel>
+                            </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -53,7 +60,7 @@
         
         <Button x:Name="AddBookButton" Grid.Row="3" Grid.Column="1" Click="AddBookButtonClick">Dodaj książkę</Button> 
 
-        <Button x:Name="ManageAuthorsButton" Grid.Row="3" Grid.Column="4">Zarządzaj autormai</Button>
+        <Button x:Name="ManageAuthorsButton" Grid.Row="3" Grid.Column="4">Zarządzaj autorami</Button>
         <Button x:Name="ManageShelfsButton" Grid.Row="3" Grid.Column="5" Click="ManageShelfsButtonClick">Zarządzaj półkami</Button>
     </Grid>
 </Window>

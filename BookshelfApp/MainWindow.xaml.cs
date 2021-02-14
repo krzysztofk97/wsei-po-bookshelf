@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using BookshelfLib;
 using BookshelfLib.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookshelfApp
@@ -26,19 +27,88 @@ namespace BookshelfApp
         {
             InitializeComponent();
 
-            BooksDataGrid.DataContext = dB.GetBooks();
+            try
+            {
+                BooksDataGrid.DataContext = dB.GetBooks();
+            }
+            catch (SqlException)
+            {
+                //Pusty MessageBox zapobigający zamknięciu komunikatu przez splashscreen.
+                MessageBox.Show("");
+
+                var databaseError = MessageBox.Show("Wystąpił problem z bazą danych programu Bookshelf.\n\n" + 
+                                                    "Upewnij się, że silnik bazy danych działa poprawnie oraz istnieje tam baza danych o nazwie \"Bookshelf\", a następnie spróbuj ponownie uruchomić program.\n\n" +
+                                                    "Program Bookshelf może również utworzyć nową, pustą bazę danych. Czy chcesz aby utworzył ją teraz?", 
+                                                    "Problem z bazą dnaych programu Bookshelf",
+                                                    MessageBoxButton.YesNo,
+                                                    MessageBoxImage.Error);
+
+                if (databaseError == MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                        dB.CreateDatabase();
+
+                        MessageBox.Show("Program Bookshelf pomyślnie utworzył nową bazę danych.", 
+                                        "Tworzenie bazy danych programu Bookshelf",
+                                        MessageBoxButton.OK,
+                                        MessageBoxImage.Information);
+                    }
+                    catch(Exception ex)
+                    {
+                        MessageBox.Show(ex.GetType().ToString() + "\n\n" + ex.Message,
+                                        "Problem z bazą dnaych programu Bookshelf",
+                                        MessageBoxButton.OK,
+                                        MessageBoxImage.Error);
+
+                        Environment.Exit(0);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Program Bookshelf zostanie zamknięty.", 
+                                    "Problem z bazą dnaych programu Bookshelf",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Information);
+
+                    Environment.Exit(0);
+                }
+            }
         }
 
         private void AddBookButtonClick(object sender, RoutedEventArgs e)
         {
-
+            AddBookWindow addBookWindow = new AddBookWindow();
+            addBookWindow.Closing += AnyWindowClosing;
+            addBookWindow.ShowDialog();
         }
 
         private void ManageShelfsButtonClick(object sender, RoutedEventArgs e)
         {
             ManageShelfsWindow manageShelfsWindow = new ManageShelfsWindow();
+            manageShelfsWindow.Closing += AnyWindowClosing;
+            manageShelfsWindow.ShowDialog();
+        }
 
-            manageShelfsWindow.Show();
+        private void AnyWindowClosing(object sender, EventArgs e)
+        {
+            BooksDataGrid.DataContext = dB.GetBooks();
+        }
+
+        private void RemoveButtonClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                dB.RemoveBook((Book)BooksDataGrid.SelectedItem);
+                BooksDataGrid.DataContext = dB.GetBooks();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.GetType().ToString() + "\n\n" + ex.Message,
+                                "Problem z bazą dnaych programu Bookshelf",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+            }
         }
     }
 }

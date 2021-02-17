@@ -8,12 +8,14 @@ USE Bookshelf;
 GO
 
 CREATE TABLE dbo.Shelfs (
-    ShelfName NVARCHAR(64) PRIMARY KEY 
+    ShelfID INT PRIMARY KEY IDENTITY(1, 1),
+    ShelfName NVARCHAR(64) UNIQUE
 );
 GO
 
 CREATE TABLE dbo.Generes (
-    GenereName NVARCHAR(32) PRIMARY KEY
+    GenereID INT PRIMARY KEY IDENTITY(1, 1),
+    GenereName NVARCHAR(32) UNIQUE
 );
 GO
 
@@ -21,24 +23,28 @@ CREATE TABLE dbo.Books (
     BookID INT PRIMARY KEY IDENTITY(1, 1),
     Title NVARCHAR(128) NOT NULL,
     PurchaseDate DATE NOT NULL,
-    GenereName NVARCHAR(32) NOT NULL,
+    GenereID INT NOT NULL,
     ReadCount INT NOT NULL DEFAULT 0,
-    ShelfName NVARCHAR(64) NOT NULL,
+    ShelfID INT NOT NULL,
 
     CONSTRAINT CHK_Books_PurchaseDate CHECK (PurchaseDate <= GETDATE()),
 
-    CONSTRAINT FK_Books_Generes FOREIGN KEY (GenereName)
-    REFERENCES dbo.Generes(GenereName),
+    CONSTRAINT CHK_Books_ReadCount CHECK (ReadCount >= 0),
 
-    CONSTRAINT FK_Books_Shelfs FOREIGN KEY (ShelfName)
-    REFERENCES dbo.Shelfs(ShelfName)
+    CONSTRAINT FK_Books_Generes FOREIGN KEY (GenereID)
+    REFERENCES dbo.Generes(GenereID),
+
+    CONSTRAINT FK_Books_Shelfs FOREIGN KEY (ShelfID)
+    REFERENCES dbo.Shelfs(ShelfID)
 );
 GO
 
 CREATE TABLE dbo.Authors (
     AuthorID INT PRIMARY KEY IDENTITY(1, 1),
-    FirstName NVARCHAR(32),
-    LastName NVARCHAR(32)
+    FirstName NVARCHAR(32) NOT NULL,
+    LastName NVARCHAR(32),
+
+    UNIQUE(FirstName, LastName)
 );
 GO
 

@@ -78,7 +78,7 @@ namespace BookshelfApp
 
         private void AddBookButtonClick(object sender, RoutedEventArgs e)
         {
-            AddBookWindow addBookWindow = new AddBookWindow();
+            AddModifyBookWindow addBookWindow = new AddModifyBookWindow();
             addBookWindow.Closing += AnyWindowClosing;
             addBookWindow.ShowDialog();
         }
@@ -109,6 +109,36 @@ namespace BookshelfApp
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
             }
+        }
+
+        private void ManageAuthorsButtonClick(object sender, RoutedEventArgs e)
+        {
+            ManageAuthorsWindow manageAuthorsWindow = new ManageAuthorsWindow();
+            manageAuthorsWindow.Closing += AnyWindowClosing;
+            manageAuthorsWindow.ShowDialog();
+        }
+
+        private void ReadButtonClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                dB.IncrementBookReadCount((Book)BooksDataGrid.SelectedItem);
+                BooksDataGrid.DataContext = dB.GetBooks();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.GetType().ToString() + "\n\n" + ex.Message,
+                                "Problem podczas inkrementacji wskaźnika przeczytań",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+            }
+        }
+
+        private void ModifyButtonClick(object sender, RoutedEventArgs e)
+        {
+            AddModifyBookWindow addBookWindow = new AddModifyBookWindow((Book)BooksDataGrid.SelectedItem);
+            addBookWindow.Closing += AnyWindowClosing;
+            addBookWindow.ShowDialog();
         }
     }
 }

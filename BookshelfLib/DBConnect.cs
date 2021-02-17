@@ -8,6 +8,8 @@ using System.Linq;
 using System.Data.SqlClient;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Xceed.Wpf.Toolkit;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookshelfLib
 {
@@ -31,7 +33,7 @@ namespace BookshelfLib
             {
                 connection.Open();
 
-                using(SqlCommand command = connection.CreateCommand())
+                using (SqlCommand command = connection.CreateCommand())
                 {
                     var script = ParseSQLScript(reader.ReadToEnd());
 
@@ -41,7 +43,7 @@ namespace BookshelfLib
                         command.ExecuteNonQuery();
                     }
                 }
-            }  
+            }
         }
         #endregion
 
@@ -54,7 +56,7 @@ namespace BookshelfLib
         {
             using (BookshelfContext context = new BookshelfContext())
             {
-                return context.Books.ToList();
+                return context.Books.Include("Genere").Include("Shelf").ToList();
             }
         }
 
@@ -65,7 +67,7 @@ namespace BookshelfLib
         /// <param name="purchaseDate">Data zakupu ksiązki</param>
         /// <param name="genere">Gatunek</param>
         /// <param name="shelf">Półka, na której znajduje się książka</param>
-        public void AddBook(string title, DateTime purchaseDate, Genere genere, Shelf shelf) 
+        public void AddBook(string title, DateTime purchaseDate, Genere genere, Shelf shelf)
         {
             title = title.Trim();
 
@@ -75,25 +77,77 @@ namespace BookshelfLib
             if (purchaseDate > DateTime.Now)
                 throw new ArgumentOutOfRangeException();
 
-            using(BookshelfContext context = new BookshelfContext())
+            using (BookshelfContext context = new BookshelfContext())
             {
                 context.Add(new Book()
                 {
                     Title = title,
                     PurchaseDate = purchaseDate,
-                    GenereName = genere.GenereName,
-                    ShelfName = shelf.ShelfName
+                    GenereId = genere.GenereId,
+                    ShelfId = shelf.ShelfId
                 });
                 context.SaveChanges();
             }
         }
 
+        /// <summary>
+        /// Modyfikuje istniejącą w bazie książkę.
+        /// </summary>
+        /// <param name="bookToModify">Książka, która ma zostać zmodyfikowana</param>
+        /// <param name="title">Nowy tytuł</param>
+        /// <param name="purchaseDate">Nowa data zakupu</param>
+        /// <param name="genere">Nowy gatunek</param>
+        /// <param name="shelf">Nowa półka</param>
+        public void ModifyBook(Book bookToModify, string title, DateTime purchaseDate, Genere genere, Shelf shelf)
+        {
+            title = title.Trim();
+
+            if (title == null || title == "" || purchaseDate == null || genere == null || shelf == null)
+                throw new ArgumentNullException();
+
+            if (purchaseDate > DateTime.Now)
+                throw new ArgumentOutOfRangeException();
+
+
+            bookToModify.Title = title;
+            bookToModify.PurchaseDate = purchaseDate;
+            bookToModify.Genere = genere;
+            bookToModify.Shelf = shelf;
+
+            using (BookshelfContext context = new BookshelfContext())
+            {
+                context.Update(bookToModify);
+                context.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// Zwiększa licznik przeczytań książki o 1
+        /// </summary>
+        /// <param name="bookRead"></param>
+        public void IncrementBookReadCount(Book bookRead)
+        {
+            if (bookRead == null)
+                throw new ArgumentNullException();
+
+            using (BookshelfContext context = new BookshelfContext())
+            {
+                bookRead.ReadCount++;
+                context.Update(bookRead);
+                context.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// Usuwa istniejącą w bazie książkę.
+        /// </summary>
+        /// <param name="bookToRemove">Książka, która ma zostać usunieta</param>
         public void RemoveBook(Book bookToRemove)
         {
             if (bookToRemove == null)
                 throw new ArgumentNullException();
 
-            using(BookshelfContext context = new BookshelfContext())
+            using (BookshelfContext context = new BookshelfContext())
             {
                 context.Remove(bookToRemove);
                 context.SaveChanges();
@@ -106,9 +160,9 @@ namespace BookshelfLib
         /// Zwraca listę półek, które znajdują się aktualnie w bazie danych.
         /// </summary>
         /// <returns>Lista obiektów klasy <c>Shelf</c></returns>
-        public List<Shelf> GetShelfs() 
+        public List<Shelf> GetShelfs()
         {
-            using(BookshelfContext context = new BookshelfContext())
+            using (BookshelfContext context = new BookshelfContext())
             {
                 return context.Shelfs.ToList();
             }
@@ -125,7 +179,7 @@ namespace BookshelfLib
             if (name == null || name == "")
                 throw new ArgumentNullException();
 
-            using(BookshelfContext context = new BookshelfContext())
+            using (BookshelfContext context = new BookshelfContext())
             {
                 context.Add(new Shelf() { ShelfName = name });
                 context.SaveChanges();
@@ -141,6 +195,27 @@ namespace BookshelfLib
             using (BookshelfContext context = new BookshelfContext())
             {
                 context.Remove(shelfToRemove);
+                context.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// Modyfikuje istniejącą w bazie półkę.
+        /// </summary>
+        /// <param name="shelfToModify">Pólka, która ma zostać zmodyfikowana</param>
+        /// <param name="name">Nowa nazwa półki</param>
+        public void ModifyShelf(Shelf shelfToModify, string name)
+        {
+            name = name.Trim();
+
+            if (shelfToModify == null || name == null || name == "")
+                throw new ArgumentNullException();
+
+            shelfToModify.ShelfName = name;
+
+            using (BookshelfContext context = new BookshelfContext())
+            {
+                context.Update(shelfToModify);
                 context.SaveChanges();
             }
         }
@@ -186,6 +261,102 @@ namespace BookshelfLib
             using (BookshelfContext context = new BookshelfContext())
             {
                 context.Remove(genereToRemove);
+                context.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// Modyfikuje istniejący w bazie gatunek.
+        /// </summary>
+        /// <param name="genereToModify">Autor, który ma zostać zmodyfikowany</param>
+        /// <param name="name">Nowa nazwa gatunku</param>
+        public void ModifyGenere(Genere genereToModify, string name)
+        {
+            name = name.Trim();
+
+            if (genereToModify == null || name == null || name == "")
+                throw new ArgumentNullException();
+
+            genereToModify.GenereName = name;
+
+            using (BookshelfContext context = new BookshelfContext())
+            {
+                context.Update(genereToModify);
+                context.SaveChanges();
+            }
+        }
+        #endregion
+
+        #region Authors Methods
+        /// <summary>
+        /// Zwraca listę autorów, którzy znajdują się aktualnie w bazie danych.
+        /// </summary>
+        /// <returns>Lista obiektów klasy <c>Author</c></returns>
+        public List<Author> GetAuthors()
+        {
+            using (BookshelfContext context = new BookshelfContext())
+            {
+                return context.Authors.ToList();
+            }
+        }
+
+        /// <summary>
+        /// Dodaje nowego autora do bazy danych.
+        /// </summary>
+        /// <param name="firstName">Imię autora</param>
+        /// <param name="lastName">Nazwisko autora</param>
+        public void AddAuthor(string firstName, string lastName)
+        {
+            firstName = firstName.Trim();
+            lastName = lastName.Trim();
+
+            if (firstName == "" || firstName == null || lastName == "" || lastName == null)
+                throw new ArgumentNullException();
+
+            using (BookshelfContext context = new BookshelfContext())
+            {
+                context.Authors.Add(new Author()
+                {
+                    FirstName = firstName,
+                    LastName = lastName
+                });
+                context.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// Usuwa istniejącego w bazie autora.
+        /// </summary>
+        /// <param name="authorToRemove">Autor, który ma zostać usunięty z bazy</param>
+        public void RemoveAuthor(Author authorToRemove)
+        {
+            using (BookshelfContext context = new BookshelfContext())
+            {
+                context.Remove(authorToRemove);
+                context.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// Modyfikuje dane instniejącego w bazie autora.
+        /// </summary>
+        /// <param name="authorToModify">Autor, który ma zostać zmodyfikowany</param>
+        /// <param name="firstName">Nowe imię autora</param>
+        /// <param name="lastName">Nowe nazwisko autora</param>
+        public void ModifyAuthor(Author authorToModify, string firstName, string lastName)
+        {
+            firstName = firstName.Trim();
+            lastName = lastName.Trim();
+
+            if (authorToModify == null || firstName == "" || firstName == null || lastName == "" || lastName == null)
+                throw new ArgumentNullException();
+
+            authorToModify.FirstName = firstName;
+            authorToModify.LastName = lastName;
+
+            using(BookshelfContext context = new BookshelfContext())
+            {
+                context.Update(authorToModify);
                 context.SaveChanges();
             }
         }

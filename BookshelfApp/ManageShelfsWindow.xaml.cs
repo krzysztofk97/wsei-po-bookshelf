@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Microsoft.EntityFrameworkCore;
+using System.Windows.Controls.Primitives;
 
 namespace BookshelfApp
 {
@@ -35,27 +36,42 @@ namespace BookshelfApp
             AddButton.IsEnabled = false;
             AddShelfTextBox.IsEnabled = false;
 
+            if (lastModifyToggleButton != null)
+                ModifyAction();
+            else
+                AddAction();
+
+            AddShelfTextBox.Clear();
+
+            ShelfsDataGrid.DataContext = dB.GetShelfs();
+
+            AddButton.IsEnabled = true;
+            AddShelfTextBox.IsEnabled = true;
+        }
+
+        private void AddAction()
+        {
             try
             {
                 dB.AddShelf(AddShelfTextBox.Text);
             }
             catch (InvalidOperationException)
             {
-                MessageBox.Show("Wystąpił błąd podczas dodawania nowej półki.", 
+                MessageBox.Show("Wystąpił błąd podczas dodawania nowej półki.",
                                 "Błąd podczas dodawania półki",
                                  MessageBoxButton.OK,
                                  MessageBoxImage.Error);
             }
             catch (DbUpdateException)
             {
-                MessageBox.Show("Wystąpił błąd podczas dodawania nowej półki.\nUpewnij się, że półka, którą próbujesz dodać nie została już dodana.", 
+                MessageBox.Show("Wystąpił błąd podczas dodawania nowej półki.\nUpewnij się, że półka, którą próbujesz dodać nie została już dodana.",
                                 "Błąd podczas dodawania półki",
                                  MessageBoxButton.OK,
                                  MessageBoxImage.Exclamation);
             }
             catch (ArgumentNullException)
             {
-                MessageBox.Show("Nie można dodać półki bez nazwy.", 
+                MessageBox.Show("Nie można dodać półki bez nazwy.",
                                 "Błąd podczas dodawania półki",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Information);
@@ -67,13 +83,38 @@ namespace BookshelfApp
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
             }
+        }
 
-            AddShelfTextBox.Clear();
+        private void ModifyAction()
+        {
+            try
+            {
+                dB.ModifyShelf(shelfToModify, AddShelfTextBox.Text);
+            }
+            catch (DbUpdateException)
+            {
+                MessageBox.Show("Wystąpił błąd podczas modyfikacji półki.\nUpewnij się, że nowa nazwa półki nie pokrywa się z nazwą już istniejącej.",
+                                "Błąd podczas modyfikacji pólki",
+                                 MessageBoxButton.OK,
+                                 MessageBoxImage.Exclamation);
+            }
+            catch (ArgumentNullException)
+            {
+                MessageBox.Show("Nazwa pólki nie może być pusta.",
+                                "Błąd podczas modyfikacji półki",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.GetType().ToString() + "\n\n" + ex.Message,
+                                "Błąd podczas modyfikacji półki",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+            }
 
-            ShelfsDataGrid.DataContext = dB.GetShelfs();
-
-            AddButton.IsEnabled = true;
-            AddShelfTextBox.IsEnabled = true;
+            lastModifyToggleButton = null;
+            AddButton.Content = "Dodaj";
         }
 
         private void RemoveButton(object sender, RoutedEventArgs e)
@@ -97,6 +138,32 @@ namespace BookshelfApp
                                 MessageBoxImage.Error);
             }
             ShelfsDataGrid.DataContext = dB.GetShelfs();
+        }
+
+        ToggleButton lastModifyToggleButton;
+        Shelf shelfToModify;
+
+        private void ModifyToggleButtonClick(object sender, RoutedEventArgs e)
+        {
+            ToggleButton currentModifyToggleButton = (ToggleButton)sender;
+
+            if (currentModifyToggleButton != lastModifyToggleButton && lastModifyToggleButton != null)
+                lastModifyToggleButton.IsChecked = false;
+
+            lastModifyToggleButton = (bool)currentModifyToggleButton.IsChecked ? currentModifyToggleButton : null;
+
+            if (lastModifyToggleButton != null)
+            {
+                shelfToModify = (Shelf)ShelfsDataGrid.SelectedItem;
+                AddButton.Content = "Modyfikuj";
+                AddShelfTextBox.Text = shelfToModify.ShelfName;
+            }
+            else
+            {
+                shelfToModify = null;
+                AddButton.Content = "Dodaj";
+                AddShelfTextBox.Clear();
+            }
         }
     }
 }

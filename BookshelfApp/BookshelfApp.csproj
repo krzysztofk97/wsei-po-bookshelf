@@ -9,6 +9,11 @@
 
   <ItemGroup>
     <None Remove="Assets\BookshelfSplashScreen.png" />
+    <None Remove="Assets\Icons\delete.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Icons\delete.png" />
   </ItemGroup>
 
   <ItemGroup>

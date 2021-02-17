@@ -12,6 +12,7 @@ namespace BookshelfLib.Models
             Books = new HashSet<Book>();
         }
 
+        public int GenereId { get; set; }
         public string GenereName { get; set; }
 
         public virtual ICollection<Book> Books { get; set; }

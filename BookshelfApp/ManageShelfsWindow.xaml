@@ -29,6 +29,13 @@
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
+                            <ToggleButton x:Name="ModifyTogleButton" Click="ModifyToggleButtonClick">Modyfikuj</ToggleButton>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
                             <Button Click="RemoveButton">Usuń</Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

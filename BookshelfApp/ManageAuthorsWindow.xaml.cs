@@ -1,82 +1,89 @@
 ﻿using BookshelfLib;
 using BookshelfLib.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using Microsoft.EntityFrameworkCore;
-using System.Windows.Controls.Primitives;
 
 namespace BookshelfApp
 {
     /// <summary>
-    /// Logika interakcji dla klasy ManageShelfsWindow.xaml
+    /// Logika interakcji dla klasy ManageAuthorsWindow.xaml
     /// </summary>
-    public partial class ManageGeneresWindow : Window
+    public partial class ManageAuthorsWindow : Window
     {
         private DBConnect dB = new DBConnect();
 
-        public ManageGeneresWindow()
+        public ManageAuthorsWindow()
         {
             InitializeComponent();
 
-            GeneresDataGrid.DataContext = dB.GetGeneres();
+            AuthorsDataGrid.DataContext = dB.GetAuthors();
         }
 
         private void AddButtonClick(object sender, RoutedEventArgs e)
         {
             AddButton.IsEnabled = false;
-            AddGenereTextBox.IsEnabled = false;
+            FirstNameTextBox.IsEnabled = false;
+            LastNameTextBox.IsEnabled = false;
 
             if (lastModifyToggleButton != null)
                 ModifyAction();
             else
                 AddAction();
 
-            AddGenereTextBox.Clear();
+            FirstNameTextBox.Clear();
+            LastNameTextBox.Clear();
 
-            GeneresDataGrid.DataContext = dB.GetGeneres();
+            AuthorsDataGrid.DataContext = dB.GetAuthors();
 
             AddButton.IsEnabled = true;
-            AddGenereTextBox.IsEnabled = true;
+            FirstNameTextBox.IsEnabled = true;
+            LastNameTextBox.IsEnabled = true;
         }
 
         private void AddAction()
         {
             try
             {
-                dB.AddGenere(AddGenereTextBox.Text);
+                dB.AddAuthor(FirstNameTextBox.Text, LastNameTextBox.Text);
             }
             catch (InvalidOperationException)
             {
-                MessageBox.Show("Wystąpił błąd podczas dodawania nowego gatunku.", "Błąd podczas dodawania gatunku",
+                MessageBox.Show("Wystąpił błąd podczas dodawania nowego autora.",
+                                "Błąd podczas dodawania autora",
                                  MessageBoxButton.OK,
                                  MessageBoxImage.Error);
             }
             catch (DbUpdateException)
             {
-                MessageBox.Show("Wystąpił błąd podczas dodawania nowego gatunku.\nUpewnij się, że gatunek, który próbujesz dodać nie został już dodany.", "Błąd podczas dodawania gatunku",
+                MessageBox.Show("Wystąpił błąd podczas dodawania nowego autora.\nUpewnij się, że autor, którego próbujesz dodać nie został już dodany.",
+                                "Błąd podczas dodawania autora",
                                  MessageBoxButton.OK,
                                  MessageBoxImage.Exclamation);
             }
             catch (ArgumentNullException)
             {
-                MessageBox.Show("Nie można dodać gatunku bez nazwy.", "Błąd podczas dodawania gatunku",
-                                 MessageBoxButton.OK,
-                                 MessageBoxImage.Information);
+                MessageBox.Show("Nie można dodać autora bez imienia lub nazwiska.",
+                                "Błąd podczas dodawania autora",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.GetType().ToString() + "\n\n" + ex.Message,
-                                "Błąd podczas dodawania gatunku",
+                                "Błąd podczas dodawania autora",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
             }
@@ -86,26 +93,26 @@ namespace BookshelfApp
         {
             try
             {
-                dB.ModifyGenere(genereToModify, AddGenereTextBox.Text);
+                dB.ModifyAuthor(authorToModify, FirstNameTextBox.Text, LastNameTextBox.Text);
             }
             catch (DbUpdateException)
             {
-                MessageBox.Show("Wystąpił błąd podczas modyfikacji gatunku.\nUpewnij się, że nowa nazwa gatunku nie pokrywa się z nazwą już istniejącego.",
-                                "Błąd podczas modyfikacji gatunku",
+                MessageBox.Show("Wystąpił błąd podczas modyfikacji autora.\nUpewnij się, że nowe dane autora nie pokrywają się z danymi istniejącego już autora.",
+                                "Błąd podczas modyfikacji autora",
                                  MessageBoxButton.OK,
                                  MessageBoxImage.Exclamation);
             }
             catch (ArgumentNullException)
             {
-                MessageBox.Show("Nazwa gatunku nie może być pusta.",
-                                "Błąd podczas modyfikacji gatunku",
+                MessageBox.Show("Imię lub nazwisko nie mogą być puste.",
+                                "Błąd podczas modyfikacji autora",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.GetType().ToString() + "\n\n" + ex.Message,
-                                "Błąd podczas modyfikacji gatunku",
+                                "Błąd podczas modyfikacji autora",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
             }
@@ -114,32 +121,24 @@ namespace BookshelfApp
             AddButton.Content = "Dodaj";
         }
 
-        private void RemoveButton(object sender, RoutedEventArgs e)
+        private void RemoveButtonClick(object sender, RoutedEventArgs e)
         {
             try
             {
-                dB.RemoveGenere((Genere)GeneresDataGrid.SelectedItem);
-            }
-            catch (DbUpdateException)
-            {
-                MessageBox.Show("Wystąpił błąd podczas próby usunięcia gatunku.\nUpewnij się, że do gatunku, który chcesz usunąć nie ma przypisanej żadej książki, a następnie spróbuj ponownie.", 
-                                "Błąd podczas usuwania gatunku",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Exclamation);
+                dB.RemoveAuthor((Author)AuthorsDataGrid.SelectedItem);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.GetType().ToString() + "\n\n" + ex.Message,
-                                "Błąd podczas usuwania gatunku",
+                                "Błąd podczas usuwania autora",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
             }
-
-            GeneresDataGrid.DataContext = dB.GetGeneres();
+            AuthorsDataGrid.DataContext = dB.GetAuthors();
         }
 
         ToggleButton lastModifyToggleButton;
-        Genere genereToModify;
+        Author authorToModify;
 
         private void ModifyToggleButtonClick(object sender, RoutedEventArgs e)
         {
@@ -152,15 +151,17 @@ namespace BookshelfApp
 
             if (lastModifyToggleButton != null)
             {
-                genereToModify = (Genere)GeneresDataGrid.SelectedItem;
+                authorToModify = (Author)AuthorsDataGrid.SelectedItem;
                 AddButton.Content = "Modyfikuj";
-                AddGenereTextBox.Text = genereToModify.GenereName;
+                FirstNameTextBox.Text = authorToModify.FirstName;
+                LastNameTextBox.Text = authorToModify.LastName;
             }
             else
             {
-                genereToModify = null;
+                authorToModify = null;
                 AddButton.Content = "Dodaj";
-                AddGenereTextBox.Clear();
+                FirstNameTextBox.Clear();
+                LastNameTextBox.Clear();
             }
         }
     }

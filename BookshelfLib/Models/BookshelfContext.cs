@@ -38,9 +38,14 @@ namespace BookshelfLib.Models
 
             modelBuilder.Entity<Author>(entity =>
             {
+                entity.HasIndex(e => new { e.FirstName, e.LastName }, "UQ__Authors__2457AEF0AF7FC5C8")
+                    .IsUnique();
+
                 entity.Property(e => e.AuthorId).HasColumnName("AuthorID");
 
-                entity.Property(e => e.FirstName).HasMaxLength(32);
+                entity.Property(e => e.FirstName)
+                    .IsRequired()
+                    .HasMaxLength(32);
 
                 entity.Property(e => e.LastName).HasMaxLength(32);
             });
@@ -49,29 +54,25 @@ namespace BookshelfLib.Models
             {
                 entity.Property(e => e.BookId).HasColumnName("BookID");
 
-                entity.Property(e => e.GenereName)
-                    .IsRequired()
-                    .HasMaxLength(32);
+                entity.Property(e => e.GenereId).HasColumnName("GenereID");
 
                 entity.Property(e => e.PurchaseDate).HasColumnType("date");
 
-                entity.Property(e => e.ShelfName)
-                    .IsRequired()
-                    .HasMaxLength(64);
+                entity.Property(e => e.ShelfId).HasColumnName("ShelfID");
 
                 entity.Property(e => e.Title)
                     .IsRequired()
                     .HasMaxLength(128);
 
-                entity.HasOne(d => d.GenereNameNavigation)
+                entity.HasOne(d => d.Genere)
                     .WithMany(p => p.Books)
-                    .HasForeignKey(d => d.GenereName)
+                    .HasForeignKey(d => d.GenereId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Books_Generes");
 
-                entity.HasOne(d => d.ShelfNameNavigation)
+                entity.HasOne(d => d.Shelf)
                     .WithMany(p => p.Books)
-                    .HasForeignKey(d => d.ShelfName)
+                    .HasForeignKey(d => d.ShelfId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Books_Shelfs");
             });
@@ -79,7 +80,7 @@ namespace BookshelfLib.Models
             modelBuilder.Entity<BookAuthor>(entity =>
             {
                 entity.HasKey(e => new { e.BookId, e.AuthorId })
-                    .HasName("PK__BookAuth__6AED6DE63B2D31C9");
+                    .HasName("PK__BookAuth__6AED6DE60B720C48");
 
                 entity.Property(e => e.BookId).HasColumnName("BookID");
 
@@ -100,16 +101,14 @@ namespace BookshelfLib.Models
 
             modelBuilder.Entity<Genere>(entity =>
             {
-                entity.HasKey(e => e.GenereName)
-                    .HasName("PK__Generes__424E038567551ED1");
+                entity.Property(e => e.GenereId).HasColumnName("GenereID");
 
                 entity.Property(e => e.GenereName).HasMaxLength(32);
             });
 
             modelBuilder.Entity<Shelf>(entity =>
             {
-                entity.HasKey(e => e.ShelfName)
-                    .HasName("PK__Shelfs__A338F035E8711177");
+                entity.Property(e => e.ShelfId).HasColumnName("ShelfID");
 
                 entity.Property(e => e.ShelfName).HasMaxLength(64);
             });

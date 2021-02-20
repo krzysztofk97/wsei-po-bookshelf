@@ -7,7 +7,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         ResizeMode="NoResize"
-        Title="Dodaj książkę" Height="450" Width="320">
+        Title="Dodaj książkę" Width="320" SizeToContent="Height">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="10"/>
@@ -21,6 +21,9 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="10"/>
         </Grid.RowDefinitions>
 
         <DockPanel Grid.Row="1" Grid.Column="1">
@@ -29,8 +32,8 @@
         </DockPanel>
         
         <DockPanel Grid.Row="2" Grid.Column="1">
-            <Label Target="{Binding ElementName=PurchaseDateCalendar}">Data zakupu</Label>
-            <DatePicker x:Name="PurchaseDateCalendar" SelectedDate="{x:Static sys:DateTime.Now}" DisplayDateEnd="{x:Static sys:DateTime.Now}"/>
+            <Label Target="{Binding ElementName=PurchaseDateDatePicker}">Data zakupu</Label>
+            <DatePicker x:Name="PurchaseDateDatePicker" SelectedDate="{x:Static sys:DateTime.Now}" DisplayDateEnd="{x:Static sys:DateTime.Now}"/>
         </DockPanel>
         
         <DockPanel Grid.Row="3" Grid.Column="1">
@@ -44,8 +47,15 @@
             <ComboBox VerticalAlignment="Center" x:Name="ShelfsComboBox" ItemsSource="{Binding Path=ShelfName}" DisplayMemberPath="ShelfName"></ComboBox>
             <Button x:Name="ManageShelfsButton" VerticalAlignment="Center" Click="ManageShelfsButtonClick">Zarządzaj</Button>
         </DockPanel>
+        
+        <DockPanel Grid.Row="5" Grid.Column="1">
+            <Label Target="{Binding ElementName=AuthorsTextBox}">Autorzy</Label>
+            <Button x:Name="AddRemoveAuthorsButton" VerticalAlignment="Center" Click="AddRemoveAuthorsButtonClick">Dodaj/Usuń</Button>
+            <Button x:Name="ManageBookAuthorsButton" VerticalAlignment="Center" Click="ManageBookAuthorsButtonClick">Zarządzaj</Button>
+        </DockPanel>
 
-        <Button x:Name="AddButton" Grid.Row="5" Grid.Column="1" Click="AddButtonClick">Dodaj</Button>
+        <Button x:Name="ReadCountResetButton" Grid.Row="6" Grid.Column="1" Click="ReadCountResetButtonClick" Visibility="Collapsed" >Resetuj licznik przeczytań</Button>
+        <Button x:Name="AddButton" Grid.Row="7" Grid.Column="1" Click="AddButtonClick">Dodaj</Button>
 
     </Grid>
 </Window>

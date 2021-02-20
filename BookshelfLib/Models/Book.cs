@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 #nullable disable
 
@@ -7,6 +9,8 @@ namespace BookshelfLib.Models
 {
     public partial class Book
     {
+        DBConnect dB = new DBConnect();
+
         public Book()
         {
             BookAuthors = new HashSet<BookAuthor>();
@@ -22,5 +26,7 @@ namespace BookshelfLib.Models
         public virtual Genere Genere { get; set; }
         public virtual Shelf Shelf { get; set; }
         public virtual ICollection<BookAuthor> BookAuthors { get; set; }
+
+        public string AuthorsToString => string.Join(", ", dB.GetBookAuthors(this).Select(x => x.FirstName + " " + x.LastName));
     }
 }

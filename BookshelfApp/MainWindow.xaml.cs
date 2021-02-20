@@ -140,5 +140,10 @@ namespace BookshelfApp
             addBookWindow.Closing += AnyWindowClosing;
             addBookWindow.ShowDialog();
         }
+
+        private void BooksDataGridLoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+        }
     }
 }

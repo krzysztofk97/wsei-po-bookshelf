@@ -22,9 +22,8 @@
             <RowDefinition Height="10"/>
         </Grid.RowDefinitions>
 
-        <DataGrid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" x:Name="ShelfsDataGrid" ItemsSource="{Binding}" AutoGenerateColumns="False" CanUserAddRows="False">
+        <DataGrid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" x:Name="ShelfsDataGrid" ItemsSource="{Binding}" AutoGenerateColumns="False" CanUserAddRows="False" SelectionMode="Single" LoadingRow="ShelfsDataGridLoadingRow">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="*" CanUserSort="False" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Nazwa" IsReadOnly="True" Binding="{Binding ShelfName}"/>
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>

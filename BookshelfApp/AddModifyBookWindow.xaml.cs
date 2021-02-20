@@ -2,6 +2,7 @@
 using BookshelfLib.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,6 +19,7 @@ namespace BookshelfApp
     {
         private DBConnect dB = new DBConnect();
         private Book bookToModify = null;
+        private List<Author> authorsList = new List<Author>();
 
         public AddModifyBookWindow(Book book = null)
         {
@@ -30,11 +32,16 @@ namespace BookshelfApp
 
             if (bookToModify != null)
             {
+                authorsList = dB.GetBookAuthors(bookToModify);
                 TitleTextBox.Text = bookToModify.Title;
-                PurchaseDateCalendar.SelectedDate = bookToModify.PurchaseDate;
+                PurchaseDateDatePicker.SelectedDate = bookToModify.PurchaseDate;
 
                 AddButton.Content = "Modyfikuj";
                 this.Title = "Modyfikuj książkę";
+                ReadCountResetButton.Visibility = Visibility.Visible;
+
+                if (book.ReadCount == 0)
+                    ReadCountResetButton.IsEnabled = false;
             }
         }
 
@@ -65,7 +72,7 @@ namespace BookshelfApp
         private void AddButtonClick(object sender, RoutedEventArgs e)
         {
             TitleTextBox.IsEnabled = false;
-            PurchaseDateCalendar.IsEnabled = false;
+            PurchaseDateDatePicker.IsEnabled = false;
             GeneresComboBox.IsEnabled = false;
             ManageGeneresButton.IsEnabled = false;
             ShelfsComboBox.IsEnabled = false;
@@ -77,12 +84,11 @@ namespace BookshelfApp
                 AddAction();
 
             TitleTextBox.IsEnabled = true;
-            PurchaseDateCalendar.IsEnabled = true;
+            PurchaseDateDatePicker.IsEnabled = true;
             GeneresComboBox.IsEnabled = true;
             ManageGeneresButton.IsEnabled = true;
             ShelfsComboBox.IsEnabled = true;
             ManageShelfsButton.IsEnabled = true;
-
         }
 
         private void AddAction()
@@ -93,9 +99,10 @@ namespace BookshelfApp
             {
                 dB.AddBook(
                     TitleTextBox.Text,
-                    (DateTime)PurchaseDateCalendar.SelectedDate,
+                    (DateTime)PurchaseDateDatePicker.SelectedDate,
                     (Genere)GeneresComboBox.SelectedItem,
-                    (Shelf)ShelfsComboBox.SelectedItem
+                    (Shelf)ShelfsComboBox.SelectedItem,
+                    authorsList
                     );
             }
             catch (ArgumentNullException)
@@ -139,9 +146,10 @@ namespace BookshelfApp
                 dB.ModifyBook(
                     bookToModify,
                     TitleTextBox.Text,
-                    (DateTime)PurchaseDateCalendar.SelectedDate,
+                    (DateTime)PurchaseDateDatePicker.SelectedDate,
                     (Genere)GeneresComboBox.SelectedItem,
-                    (Shelf)ShelfsComboBox.SelectedItem
+                    (Shelf)ShelfsComboBox.SelectedItem,
+                    authorsList
                     );
             }
             catch (ArgumentNullException)
@@ -174,6 +182,36 @@ namespace BookshelfApp
 
             if (bookModifySuccess)
                 this.Close();
+        }
+
+        private void ReadCountResetButtonClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                dB.ResetBookReadCount(bookToModify);
+                ReadCountResetButton.IsEnabled = false;
+                ReadCountResetButton.Content = "Licznik przeczytań zresetowany";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.GetType().ToString() + "\n\n" + ex.Message,
+                                "Problem podczas resetowania licznika przeczytań",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+            }
+        }
+
+        private void ManageBookAuthorsButtonClick(object sender, RoutedEventArgs e)
+        {
+            ManageAuthorsWindow manageAuthorsWindow = new ManageAuthorsWindow();
+            manageAuthorsWindow.ShowDialog();
+        }
+
+        private void AddRemoveAuthorsButtonClick(object sender, RoutedEventArgs e)
+        {
+            ManageBookAuthorsWindow manageBookAuthorsWindow = new ManageBookAuthorsWindow(authorsList);
+            manageBookAuthorsWindow.ShowDialog();
+            authorsList = manageBookAuthorsWindow.Result;
         }
     }
 }

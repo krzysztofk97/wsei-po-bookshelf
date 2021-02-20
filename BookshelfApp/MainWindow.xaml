@@ -25,11 +25,10 @@
             <RowDefinition Height="10"/>
         </Grid.RowDefinitions>
 
-        <DataGrid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="5" x:Name="BooksDataGrid" ItemsSource="{Binding}" AutoGenerateColumns="False" CanUserAddRows="False">
+        <DataGrid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="5" x:Name="BooksDataGrid" ItemsSource="{Binding}"  AutoGenerateColumns="False" CanUserAddRows="False" SelectionMode="Single" LoadingRow="BooksDataGridLoadingRow">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="*" CanUserSort="False" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Tytuł" IsReadOnly="True" Binding="{Binding Title}"/>
-                <DataGridTextColumn Header="Autorzy" IsReadOnly="True" Binding="{Binding AuthorsCount}"/>
+                <DataGridTextColumn Header="Autorzy" IsReadOnly="True" Binding="{Binding AuthorsToString}"/>
                 <DataGridTextColumn Header="Data zakupu" IsReadOnly="True" Binding="{Binding PurchaseDate, StringFormat=dd.MM.yyyy}"/>
                 <DataGridTextColumn Header="Gatunek" IsReadOnly="True" Binding="{Binding Genere.GenereName}"/>
                 <DataGridTextColumn Header="Półka" IsReadOnly="True" Binding="{Binding Shelf.ShelfName}"/>

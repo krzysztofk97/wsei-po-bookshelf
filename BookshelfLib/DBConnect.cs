@@ -8,7 +8,6 @@ using System.Linq;
 using System.Data.SqlClient;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Xceed.Wpf.Toolkit;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookshelfLib
@@ -56,7 +55,10 @@ namespace BookshelfLib
         {
             using (BookshelfContext context = new BookshelfContext())
             {
-                return context.Books.Include("Genere").Include("Shelf").ToList();
+                return context.Books
+                    .Include("Genere")
+                    .Include("Shelf")
+                    .ToList();
             }
         }
 
@@ -67,27 +69,33 @@ namespace BookshelfLib
         /// <param name="purchaseDate">Data zakupu ksiązki</param>
         /// <param name="genere">Gatunek</param>
         /// <param name="shelf">Półka, na której znajduje się książka</param>
-        public void AddBook(string title, DateTime purchaseDate, Genere genere, Shelf shelf)
+        /// <param name="authors">Lista autorów książki</param>
+        public void AddBook(string title, DateTime purchaseDate, Genere genere, Shelf shelf, List<Author> authors)
         {
             title = title.Trim();
 
-            if (title == null || title == "" || purchaseDate == null || genere == null || shelf == null)
+            if (title == null || title == "" || purchaseDate == null || genere == null || shelf == null || authors == null || authors.Count == 0)
                 throw new ArgumentNullException();
 
             if (purchaseDate > DateTime.Now)
                 throw new ArgumentOutOfRangeException();
 
+            Book bookToAdd = new Book()
+            {
+                Title = title,
+                PurchaseDate = purchaseDate,
+                GenereId = genere.GenereId,
+                ShelfId = shelf.ShelfId
+            };
+
             using (BookshelfContext context = new BookshelfContext())
             {
-                context.Add(new Book()
-                {
-                    Title = title,
-                    PurchaseDate = purchaseDate,
-                    GenereId = genere.GenereId,
-                    ShelfId = shelf.ShelfId
-                });
-                context.SaveChanges();
+                context.Add(bookToAdd);
+                context.SaveChanges();                    
             }
+
+            foreach (Author author in authors)
+                AddBookAuthor(bookToAdd, author);
         }
 
         /// <summary>
@@ -98,11 +106,11 @@ namespace BookshelfLib
         /// <param name="purchaseDate">Nowa data zakupu</param>
         /// <param name="genere">Nowy gatunek</param>
         /// <param name="shelf">Nowa półka</param>
-        public void ModifyBook(Book bookToModify, string title, DateTime purchaseDate, Genere genere, Shelf shelf)
+        public void ModifyBook(Book bookToModify, string title, DateTime purchaseDate, Genere genere, Shelf shelf, List<Author> authors)
         {
             title = title.Trim();
 
-            if (title == null || title == "" || purchaseDate == null || genere == null || shelf == null)
+            if (title == null || title == "" || purchaseDate == null || genere == null || shelf == null || authors == null || authors.Count == 0)
                 throw new ArgumentNullException();
 
             if (purchaseDate > DateTime.Now)
@@ -119,12 +127,26 @@ namespace BookshelfLib
                 context.Update(bookToModify);
                 context.SaveChanges();
             }
+
+            List<Author> currentBookAuthors = GetBookAuthors(bookToModify);
+
+            foreach(Author authorToRemove in currentBookAuthors)
+            {
+                if (!authors.Contains(authorToRemove))
+                    RemoveAuthorFromBook(bookToModify, authorToRemove);
+            }
+
+            foreach(Author authorToAdd in authors)
+            {
+                if (!currentBookAuthors.Contains(authorToAdd))
+                    AddBookAuthor(bookToModify, authorToAdd);
+            }
         }
 
         /// <summary>
-        /// Zwiększa licznik przeczytań książki o 1
+        /// Zwiększa licznik przeczytań książki o 1.
         /// </summary>
-        /// <param name="bookRead"></param>
+        /// <param name="bookRead">Przeczytana książka</param>
         public void IncrementBookReadCount(Book bookRead)
         {
             if (bookRead == null)
@@ -139,6 +161,23 @@ namespace BookshelfLib
         }
 
         /// <summary>
+        /// Resetuje licznik przeczytań książki
+        /// </summary>
+        /// <param name="book">Książka, której licznik ma zostać zresetowany</param>
+        public void ResetBookReadCount(Book book)
+        {
+            if (book == null)
+                throw new ArgumentNullException();
+
+            using (BookshelfContext context = new BookshelfContext())
+            {
+                book.ReadCount = 0;
+                context.Update(book);
+                context.SaveChanges();
+            }
+        }
+
+        /// <summary>
         /// Usuwa istniejącą w bazie książkę.
         /// </summary>
         /// <param name="bookToRemove">Książka, która ma zostać usunieta</param>
@@ -146,6 +185,9 @@ namespace BookshelfLib
         {
             if (bookToRemove == null)
                 throw new ArgumentNullException();
+
+            foreach (Author bookAuthor in GetBookAuthors(bookToRemove))
+                RemoveAuthorFromBook(bookToRemove, bookAuthor);
 
             using (BookshelfContext context = new BookshelfContext())
             {
@@ -357,6 +399,66 @@ namespace BookshelfLib
             using(BookshelfContext context = new BookshelfContext())
             {
                 context.Update(authorToModify);
+                context.SaveChanges();
+            }
+        }
+        #endregion
+
+        #region BookAuthors Methods
+        /// <summary>
+        /// Zwraca listę autorów danej książki.
+        /// </summary>
+        /// <param name="book">Książka, której autorzy mają zostać zwróceni</param>
+        /// <returns>Lista obiektów klasy <c>Author</c></returns>
+        public List<Author> GetBookAuthors(Book book)
+        {
+            using(BookshelfContext context = new BookshelfContext())
+            {
+                return context.BookAuthors
+                    .Where(x => x.BookId == book.BookId)
+                    .Include("Author")
+                    .Select(x => x.Author).ToList();
+            }
+        }
+
+        /// <summary>
+        /// Dodaje istniejącego w bazie autora do istniejącej bazie ksiązki.
+        /// </summary>
+        /// <param name="book">Ksiązka, do której ma zostać dodany autor</param>
+        /// <param name="author">Autor, który ma zostać przypisany do danej książki</param>
+        public void AddBookAuthor(Book book, Author author) 
+        {
+            if (book == null || author == null)
+                throw new ArgumentNullException();
+
+            using(BookshelfContext context = new BookshelfContext())
+            {
+                context.Add(new BookAuthor()
+                {
+                    BookId = book.BookId,
+                    AuthorId = author.AuthorId
+                });
+                context.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// Usuwa autora z danej książki.
+        /// </summary>
+        /// <param name="book">Książka, z której ma zostać usunięty dany autor</param>
+        /// <param name="author">Autor, który ma zostać usunięty z danej książki</param>
+        public void RemoveAuthorFromBook(Book book, Author author)
+        {
+            if (book == null || author == null)
+                throw new ArgumentNullException();
+
+            using (BookshelfContext context = new BookshelfContext())
+            {
+                context.Remove(new BookAuthor()
+                {
+                    BookId = book.BookId,
+                    AuthorId = author.AuthorId
+                });
                 context.SaveChanges();
             }
         }

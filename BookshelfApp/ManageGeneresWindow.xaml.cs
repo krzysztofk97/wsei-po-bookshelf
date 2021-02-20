@@ -163,5 +163,10 @@ namespace BookshelfApp
                 AddGenereTextBox.Clear();
             }
         }
+
+        private void GeneresDataGridLoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+        }
     }
 }

@@ -165,5 +165,10 @@ namespace BookshelfApp
                 AddShelfTextBox.Clear();
             }
         }
+
+        private void ShelfsDataGridLoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+        }
     }
 }

@@ -152,17 +152,24 @@ namespace BookshelfApp
             if (lastModifyToggleButton != null)
             {
                 authorToModify = (Author)AuthorsDataGrid.SelectedItem;
-                AddButton.Content = "Modyfikuj";
+                AddButtonImage.Source = new BitmapImage(new Uri(@"Assets/Icons/modify.png", UriKind.Relative));
+                AddButtonTextBlock.Text = "Modyfikuj";
                 FirstNameTextBox.Text = authorToModify.FirstName;
                 LastNameTextBox.Text = authorToModify.LastName;
             }
             else
             {
                 authorToModify = null;
-                AddButton.Content = "Dodaj";
+                AddButtonImage.Source = new BitmapImage(new Uri(@"Assets/Icons/add.png", UriKind.Relative));
+                AddButtonTextBlock.Text = "Dodaj";
                 FirstNameTextBox.Clear();
                 LastNameTextBox.Clear();
             }
+        }
+
+        private void AuthorsDataGridLoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
         }
     }
 }

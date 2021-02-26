@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BookshelfApp"
         mc:Ignorable="d"
-        Title="ManageBookAuthorsWindow" Height="450" Width="800">
+        ResizeMode="NoResize"
+        Title="Modyfikacja autorów książki" Height="500" Width="400">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="10"/>
@@ -18,10 +19,7 @@
             <RowDefinition Height="10"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="10"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="10"/>
         </Grid.RowDefinitions>
-
         <DataGrid Grid.Column="1" Grid.Row="1" x:Name="CurrentAuthorsDataGrid" ItemsSource="{Binding}" AutoGenerateColumns="False" CanUserAddRows="False" SelectionMode="Single" LoadingRow="AuthorsDataGridLoadingRow">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Imię" IsReadOnly="True" Binding="{Binding FirstName}"/>
@@ -29,13 +27,14 @@
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button x:Name="RemoveButton" Click="RemoveButtonClick">Usuń</Button>
+                            <Button x:Name="RemoveButton" Click="RemoveButtonClick" Height="24" Width="24">
+                                <Image Source="/Assets/Icons/delete.png" Stretch="Uniform"/>
+                            </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-
         <DataGrid Grid.Column="1" Grid.Row="3" x:Name="AllAuthorsDataGrid" ItemsSource="{Binding}" AutoGenerateColumns="False" CanUserAddRows="False" SelectionMode="Single" LoadingRow="AuthorsDataGridLoadingRow">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Imię" IsReadOnly="True" Binding="{Binding FirstName}"/>
@@ -43,7 +42,9 @@
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button x:Name="AddButton" Click="AddButtonClick">Dodaj</Button>
+                            <Button x:Name="AddButton" Click="AddButtonClick" Height="24" Width="24">
+                                <Image Source="/Assets/Icons/add.png" Stretch="Uniform"/>
+                            </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

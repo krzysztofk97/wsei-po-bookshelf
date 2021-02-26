@@ -155,13 +155,15 @@ namespace BookshelfApp
             if (lastModifyToggleButton != null)
             {
                 shelfToModify = (Shelf)ShelfsDataGrid.SelectedItem;
-                AddButton.Content = "Modyfikuj";
+                AddButtonImage.Source = new BitmapImage(new Uri(@"Assets/Icons/modify.png", UriKind.Relative));
+                AddButtonTextBlock.Text = "Modyfikuj";
                 AddShelfTextBox.Text = shelfToModify.ShelfName;
             }
             else
             {
                 shelfToModify = null;
-                AddButton.Content = "Dodaj";
+                AddButtonImage.Source = new BitmapImage(new Uri(@"Assets/Icons/add.png", UriKind.Relative));
+                AddButtonTextBlock.Text = "Dodaj";
                 AddShelfTextBox.Clear();
             }
         }

@@ -9,6 +9,7 @@ using System.Data.SqlClient;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace BookshelfLib
 {
@@ -23,12 +24,11 @@ namespace BookshelfLib
         /// </summary>
         public void CreateDatabase()
         {
-            string connectionString = "Server=(localdb)\\MSSQLLocalDB;Integrated Security=true;Database=master";
             var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("BookshelfLib.CreateDatabase.sql");
 
             StreamReader reader = new StreamReader(stream);
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(Helper.GetDefaultDBConnectionString() + ";Database=master"))
             {
                 connection.Open();
 
@@ -115,7 +115,6 @@ namespace BookshelfLib
 
             if (purchaseDate > DateTime.Now)
                 throw new ArgumentOutOfRangeException();
-
 
             bookToModify.Title = title;
             bookToModify.PurchaseDate = purchaseDate;

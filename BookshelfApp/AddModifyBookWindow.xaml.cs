@@ -36,7 +36,8 @@ namespace BookshelfApp
                 TitleTextBox.Text = bookToModify.Title;
                 PurchaseDateDatePicker.SelectedDate = bookToModify.PurchaseDate;
 
-                AddButton.Content = "Modyfikuj";
+                AddButtonImage.Source = new BitmapImage(new Uri(@"Assets/Icons/modify.png", UriKind.Relative));
+                AddButtonTextBlock.Text = "Modyfikuj";
                 this.Title = "Modyfikuj książkę";
                 ReadCountResetButton.Visibility = Visibility.Visible;
 

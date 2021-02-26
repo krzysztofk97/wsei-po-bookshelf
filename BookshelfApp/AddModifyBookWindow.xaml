@@ -11,6 +11,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="10"/>
         </Grid.ColumnDefinitions>
@@ -21,41 +22,51 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="10"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="10"/>
         </Grid.RowDefinitions>
-
-        <DockPanel Grid.Row="1" Grid.Column="1">
-            <Label Target="{Binding ElementName=TitleTextBox}">Tytuł</Label>
-            <TextBox x:Name="TitleTextBox" VerticalAlignment="Center"></TextBox>
+        <Label Grid.Row="1" Grid.Column="1" Target="{Binding ElementName=TitleTextBox}">Tytuł</Label>
+        <TextBox Grid.Row="1" Grid.Column="2" x:Name="TitleTextBox" VerticalAlignment="Stretch" Height="24" VerticalContentAlignment="Center"/>
+        <Label Grid.Row="2" Grid.Column="1" Target="{Binding ElementName=PurchaseDateDatePicker}">Data zakupu</Label>
+        <DatePicker Grid.Row="2" Grid.Column="2" x:Name="PurchaseDateDatePicker" SelectedDate="{x:Static sys:DateTime.Now}" DisplayDateEnd="{x:Static sys:DateTime.Now}" Height="24"/>
+        <Label Grid.Row="3" Grid.Column="1">Gatunek</Label>
+        <DockPanel Grid.Row="3" Grid.Column="2" Width="Auto">
+            <Button x:Name="ManageGeneresButton" VerticalAlignment="Center" Click="ManageGeneresButtonClick" Height="24" Width="24">
+                <Image Source="/Assets/Icons/settings.png" Stretch="Uniform"/>
+            </Button>
+            <ComboBox VerticalAlignment="Center" Width="Auto" x:Name="GeneresComboBox" ItemsSource="{Binding Path=GenereName}" DisplayMemberPath="GenereName" Height="24"/>
         </DockPanel>
-        
-        <DockPanel Grid.Row="2" Grid.Column="1">
-            <Label Target="{Binding ElementName=PurchaseDateDatePicker}">Data zakupu</Label>
-            <DatePicker x:Name="PurchaseDateDatePicker" SelectedDate="{x:Static sys:DateTime.Now}" DisplayDateEnd="{x:Static sys:DateTime.Now}"/>
+        <Label Grid.Row="4" Grid.Column="1">Półka</Label>
+        <DockPanel Grid.Row="4" Grid.Column="2" Width="Auto">
+            <Button x:Name="ManageShelfsButton" VerticalAlignment="Center" Click="ManageShelfsButtonClick" Height="24" Width="24">
+                <Image Source="/Assets/Icons/settings.png" Stretch="Uniform"/>
+            </Button>
+            <ComboBox VerticalAlignment="Center" x:Name="ShelfsComboBox" ItemsSource="{Binding Path=ShelfName}" DisplayMemberPath="ShelfName" Height="24"></ComboBox>
         </DockPanel>
-        
-        <DockPanel Grid.Row="3" Grid.Column="1">
-            <Label Target="{Binding ElementName=GenereTextBox}">Gatunek</Label>
-            <ComboBox VerticalAlignment="Center" x:Name="GeneresComboBox" ItemsSource="{Binding Path=GenereName}" DisplayMemberPath="GenereName"></ComboBox>
-            <Button x:Name="ManageGeneresButton" VerticalAlignment="Center" Click="ManageGeneresButtonClick">Zarządzaj</Button>
-        </DockPanel>
-
-        <DockPanel Grid.Row="4" Grid.Column="1">
-            <Label Target="{Binding ElementName=ShelfTextBox}">Półka</Label>
-            <ComboBox VerticalAlignment="Center" x:Name="ShelfsComboBox" ItemsSource="{Binding Path=ShelfName}" DisplayMemberPath="ShelfName"></ComboBox>
-            <Button x:Name="ManageShelfsButton" VerticalAlignment="Center" Click="ManageShelfsButtonClick">Zarządzaj</Button>
-        </DockPanel>
-        
-        <DockPanel Grid.Row="5" Grid.Column="1">
-            <Label Target="{Binding ElementName=AuthorsTextBox}">Autorzy</Label>
-            <Button x:Name="AddRemoveAuthorsButton" VerticalAlignment="Center" Click="AddRemoveAuthorsButtonClick">Dodaj/Usuń</Button>
-            <Button x:Name="ManageBookAuthorsButton" VerticalAlignment="Center" Click="ManageBookAuthorsButtonClick">Zarządzaj</Button>
-        </DockPanel>
-
-        <Button x:Name="ReadCountResetButton" Grid.Row="6" Grid.Column="1" Click="ReadCountResetButtonClick" Visibility="Collapsed" >Resetuj licznik przeczytań</Button>
-        <Button x:Name="AddButton" Grid.Row="7" Grid.Column="1" Click="AddButtonClick">Dodaj</Button>
-
+        <Label Grid.Row="5" Grid.Column="1">Autorzy</Label>
+        <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="2">
+            <Button x:Name="ManageBookAuthorsButton" VerticalAlignment="Center" Click="ManageBookAuthorsButtonClick" Height="24" Width="24">
+                <Image Source="/Assets/Icons/settings.png" Stretch="Uniform"/>
+            </Button>
+            <Button x:Name="AddRemoveAuthorsButton" VerticalAlignment="Center" Click="AddRemoveAuthorsButtonClick" Height="24" Width="24">
+                <Image Source="/Assets/Icons/modify.png" Stretch="Uniform"/>
+            </Button>
+        </StackPanel>
+        <StackPanel Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2">
+            <Button x:Name="ReadCountResetButton"  Click="ReadCountResetButtonClick" Visibility="Collapsed" Height="24">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Image Source="Assets/Icons/reset.png" Stretch="Uniform" VerticalAlignment="Center"/>
+                    <TextBlock VerticalAlignment="Center">Resetuj licznik przeczytań</TextBlock>
+                </StackPanel>
+            </Button>
+            <Button x:Name="AddButton" Grid.Row="8" Grid.Column="1" Click="AddButtonClick" Height="24">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Image x:Name="AddButtonImage" Source="Assets/Icons/add.png" Stretch="Uniform" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="AddButtonTextBlock" VerticalAlignment="Center">Dodaj</TextBlock>
+                </StackPanel>
+            </Button>
+        </StackPanel>
     </Grid>
 </Window>

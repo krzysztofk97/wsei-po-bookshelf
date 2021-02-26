@@ -153,13 +153,15 @@ namespace BookshelfApp
             if (lastModifyToggleButton != null)
             {
                 genereToModify = (Genere)GeneresDataGrid.SelectedItem;
-                AddButton.Content = "Modyfikuj";
+                AddButtonImage.Source = new BitmapImage(new Uri(@"Assets/Icons/modify.png", UriKind.Relative));
+                AddButtonTextBlock.Text = "Modyfikuj";
                 AddGenereTextBox.Text = genereToModify.GenereName;
             }
             else
             {
                 genereToModify = null;
-                AddButton.Content = "Dodaj";
+                AddButtonImage.Source = new BitmapImage(new Uri(@"Assets/Icons/add.png", UriKind.Relative));
+                AddButtonTextBlock.Text = "Dodaj";
                 AddGenereTextBox.Clear();
             }
         }

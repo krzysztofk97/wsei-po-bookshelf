@@ -10,11 +10,9 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="10"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -24,8 +22,7 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="10"/>
         </Grid.RowDefinitions>
-
-        <DataGrid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="5" x:Name="BooksDataGrid" ItemsSource="{Binding}"  AutoGenerateColumns="False" CanUserAddRows="False" SelectionMode="Single" LoadingRow="BooksDataGridLoadingRow">
+        <DataGrid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" x:Name="BooksDataGrid" ItemsSource="{Binding}" AutoGenerateColumns="False" CanUserAddRows="False" SelectionMode="Single" LoadingRow="BooksDataGridLoadingRow">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Tytuł" IsReadOnly="True" Binding="{Binding Title}"/>
                 <DataGridTextColumn Header="Autorzy" IsReadOnly="True" Binding="{Binding AuthorsToString}"/>
@@ -36,30 +33,37 @@
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button x:Name="ReadButton" Click="ReadButtonClick">Przeczytane</Button>
+                            <Button x:Name="ReadButton" Click="ReadButtonClick" Width="24" Height="24">
+                                <Image Source="Assets/Icons/done.png" Stretch="Uniform"/>
+                            </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button x:Name="ModifyButton" Click="ModifyButtonClick">Modyfikuj</Button>
+                            <Button x:Name="ModifyButton" Click="ModifyButtonClick" Width="24" Height="24">
+                                <Image Source="Assets/Icons/modify.png" Stretch="Uniform"/>
+                            </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button x:Name="RemoveButton" Click="RemoveButtonClick">Usuń</Button>
+                            <Button x:Name="RemoveButton" Click="RemoveButtonClick" Width="24" Height="24">
+                                <Image Source="Assets/Icons/delete.png" Stretch="Uniform"/>
+                            </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        
-        <Button x:Name="AddBookButton" Grid.Row="3" Grid.Column="1" Click="AddBookButtonClick">Dodaj książkę</Button> 
-
-        <Button x:Name="ManageAuthorsButton" Grid.Row="3" Grid.Column="4" Click="ManageAuthorsButtonClick">Zarządzaj autorami</Button>
-        <Button x:Name="ManageShelfsButton" Grid.Row="3" Grid.Column="5" Click="ManageShelfsButtonClick">Zarządzaj półkami</Button>
+        <Button x:Name="AddBookButton" Grid.Row="3" Grid.Column="1" Click="AddBookButtonClick" Height="24">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Image Source="Assets/Icons/add.png" Stretch="Uniform" VerticalAlignment="Center"/>
+                <TextBlock VerticalAlignment="Center">Dodaj książkę</TextBlock>
+            </StackPanel>
+        </Button>
     </Grid>
 </Window>
